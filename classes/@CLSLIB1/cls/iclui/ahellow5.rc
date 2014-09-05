@@ -1,0 +1,124 @@
+/******************************************************************************/
+/* HELLO WORLD SAMPLE PROGRAM - Version 5: Resource Definitions (AHELLOW5.RC) */
+/*                                                                            */
+/* COPYRIGHT: Copyright (C) International Business Machines Corp., 1992,1993. */
+/*                                                                            */
+/* DISCLAIMER OF WARRANTIES:                                                  */
+/*   The following [enclosed] code is sample code created by IBM              */
+/*   Corporation.  This sample code is not part of any standard IBM product   */
+/*   and is provided to you solely for the purpose of assisting you in the    */
+/*   development of your applications.  The code is provided "AS IS",         */
+/*   without warranty of any kind.  IBM shall not be liable for any damages   */
+/*   arising out of your use of the sample code, even if they have been       */
+/*   advised of the possibility of such damages.                              */
+/******************************************************************************/
+
+#include <os2.h>                                //Include os2.h               v4
+#include "ahellow5.h"                           //Symbolic Definitions        v2
+
+//**************************************************************************  v2
+// icon and bitmap resources                                               *   .
+//  Symbolic Name (ID) <-> icon filename                                   *   .
+//**************************************************************************   .
+ICON WND_MAIN ahellow5.ico                      //Title Bar Icon (use same id)v2
+
+//**************************************************************************  v2
+// string resources - used by IStaticText & ITitle Classes                 *   .
+//  Symbolic Name (ID) <-> Text String                                     *   .
+//**************************************************************************  v2
+STRINGTABLE
+  BEGIN
+    STR_HELLO,  "Hello, World!!!!!"             //Hello World String          v5
+    WND_MAIN,   "C++ Hello World - Version 5"   //Title Bar String (main id)  v5
+    STR_INFO,   "Use Alt-F4 to Close Window"    //Information Area String     v2
+    MI_EDIT,    "Edit Menu"                     //InfoArea - Edit Menu        v4     .
+    MI_ALIGNMENT,"Alignment Menu"               //InfoArea - Alignment Menu   v3
+    MI_CENTER,  "Set Center Alignment"          //InfoArea - Center Menu       .
+    MI_LEFT,    "Set Left Alignment"            //InfoArea - Left Menu         .
+    MI_RIGHT,   "Set Right Alignment"           //InfoArea - Right Menu       v3
+    MI_TEXT,    "Display Edit Dialog"           //InfoArea - Text Menu        v4
+    MI_HELP,    "Help Menu"                     //Help Menu ID                v5
+    MI_GENERAL_HELP, "Display General Help"     //General Help                 .
+    SC_HELPEXTENDED, "Display Extended Help"    //Extended Help                .
+    SC_HELPKEYS,"Display Keys Help"             //Keys Help                    .
+    SC_HELPINDEX,"Display Help Index"           //Help Index                  v5
+    STR_INFODLG,"Modal Edit Text Dialog Active" //Information Area String     v4
+    STR_CENTER, "Center Alignment"              //Status Line Text - Center   v3
+    STR_LEFT,   "Left Alignment"                //Status Line Text - Left     v3
+    STR_RIGHT,  "Right Alignment"               //Status Line Text - Right    v3
+    STR_LEFTB,  "Left"                          //String for Left Button      v4
+    STR_CENTERB,"Center"                        //String for Center Button     .
+    STR_RIGHTB, "Right"                         //String for Right Button     v4
+    STR_HELPB,  "Help"                          //String for Help Button      v5
+    STR_HTITLE, "C++ Hello World - Help Window" //Help Title                  v5
+  END
+
+//**************************************************************************  v3
+// menu bar for main window - used by IMenuBar Class                       *   .
+//  Text String <-> Menu Item ID (Command ID)                              *   .
+//**************************************************************************  v3
+MENU WND_MAIN                                   //Main Window Menu (WND_MAIN) v3
+  BEGIN
+    SUBMENU "~Edit", MI_EDIT                    //Edit Submenu                v4
+      BEGIN
+        SUBMENU "~Alignment", MI_ALIGNMENT      //Alignment Submenu           v3
+          BEGIN
+            MENUITEM "~Left\tF7",   MI_LEFT     //Left Menu Item - F7 Key     v4
+            MENUITEM "~Center\tF8", MI_CENTER   //Center Menu Item - F8 Key   v4
+            MENUITEM "~Right\tF9",  MI_RIGHT    //Right Menu Item - F9 Key    v4
+          END
+        MENUITEM "~Text...", MI_TEXT            //Text Menu Item              v4
+      END
+    SUBMENU "~Help", MI_HELP                    //Help Submenu                v5
+      BEGIN                                                                 // .
+        MENUITEM "~General help...",   MI_GENERAL_HELP                      // .
+        MENUITEM "~Extended help...",  SC_HELPEXTENDED, MIS_SYSCOMMAND      // .
+        MENUITEM "~Keys help...",      SC_HELPKEYS, MIS_SYSCOMMAND          // .
+        MENUITEM "Help ~index...",     SC_HELPINDEX, MIS_SYSCOMMAND         // .
+      END                                                                   //v5
+  END
+
+//**************************************************************************  v4
+// Accelerator (key) table resources - used by IAccelerator Class          *   .
+//  Key Value <-> Menu Item ID (Command ID)                                *   .
+//**************************************************************************   .
+ACCELTABLE WND_MAIN                             //Acc. Table for Main Window   .
+  BEGIN                                         //                             .
+    VK_F7,  MI_LEFT,   VIRTUALKEY               //F7 - Left Command            .
+    VK_F8,  MI_CENTER, VIRTUALKEY               //F8 - Center Command          .
+    VK_F9,  MI_RIGHT,  VIRTUALKEY               //F9 - Right Command           .
+  END                                           //                            v4
+
+//**************************************************************************  v4
+// dialog resources - used by ATextDialog Class                            *   .
+//**************************************************************************   .
+rcinclude adialog5.dlg                          //Text Dialog Template        v4
+
+//**************************************************************************  v5
+// help table resources - used by IHelpWindow Class                        *   .
+//**************************************************************************  v5
+HELPTABLE HELP_TABLE                                                        // .
+  BEGIN                                                                     // .
+    HELPITEM WND_MAIN,        SUBTABLE_MAIN,   100                          // .
+    HELPITEM WND_TEXTDIALOG,  SUBTABLE_DIALOG, 200                          // .
+  END                                                                       //v5
+
+HELPSUBTABLE SUBTABLE_MAIN                      //Main Window Help Subtable   v5
+  BEGIN                                         //                             .
+    HELPSUBITEM WND_HELLO, 100                  //Hello <-> Help ID 100        .
+    HELPSUBITEM WND_LISTBOX,102                 //List Box Help
+    HELPSUBITEM MI_EDIT, 110                    //Edit Menu                    .
+    HELPSUBITEM MI_ALIGNMENT, 111               //Alignment Menu               .
+    HELPSUBITEM MI_LEFT, 112                    //Left Menu Item               .
+    HELPSUBITEM MI_CENTER, 113                  //Center Menu Item             .
+    HELPSUBITEM MI_RIGHT, 114                   //Right Menu Item              .
+    HELPSUBITEM MI_TEXT, 199                    //Text Menu Item               .
+  END                                           //                            v5
+
+HELPSUBTABLE SUBTABLE_DIALOG                    //Text Dialog Help Subtable   v5
+  BEGIN                                         //                             .
+    HELPSUBITEM DID_ENTRY, 201                  //Entry Field <-> Help ID 201  .
+    HELPSUBITEM DID_OK, 202                     //OK Button <-> Help ID 202    .
+    HELPSUBITEM DID_CANCEL, 203                 //OK Button <-> Help ID 203    .
+  END                                           //                            v5
+

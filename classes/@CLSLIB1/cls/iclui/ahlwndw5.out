@@ -1,0 +1,152 @@
+/////V ahlwndw5  f:\cls_ibm\cls\iclui 1  PM 05.09.94 21:55:14
+
+/////I AHelloWindow5 ICLUI example @ 0 @  @ 
+This is a port of the IBM C/Set++ ICLUI example HELLO5 (located in
+\ibmcpp\samples\iclui\hello5).
+
+It demonstrates how an existing multi file ICLUI application with
+PM resources and online help can be (re)structured within
+CTHROUGH.
+
+It is mainly used as an example of a simple "Post Build Procedure"
+
+/////I List of Files @ 1 @  @ 
+The example consists of the following files and classes:
+
+1.) converted class files
+ 	AHLWNDW5.CPP	: class AHelloWindow5, AHelpHandler
+	converted from:	AHELLOW5.HPP + AHELLOW5.CPP
+
+	AERTWNDW.CPP : class AEarthWindow
+	converted from:	AEARTHW5.HPP + AEARTHW5.CPP
+
+	ATXTDLOG.CPP : class ATextDialog
+	converted from:	ADIALOG5.CPP + ADIALOG5.HPP
+
+2.) unmodified IBM support files
+	ADIALOG5.DLG
+	AHELLOW5.RC
+	AHELLOW5.IPF
+	AHELLOW5.H
+
+3.) CTHROUGH support files
+	AHLWNDW5.OUT	: this file
+	AHLWNDW5.CMD	: post build procedure example
+
+/////I Conversion Process @ 1 @  @ 
+With the post build procedure mechanism, only the class files have
+to be converted. The order of conversion is of no importance.
+
+	add a new source directory that should hold the new classes
+	via the HierarchyViewer DirPane popup "Add"
+	(e.g. "d:\cthru\clstest1") 
+	open a ClassConverter
+
+	select the *.hpp, *.cpp sources from the C/Set++ directory
+	(\ibmcpp\samples\iclui\hello5) via ClassConverter popoup
+	"Open Source"
+	position cursor of *.hpp source window on "class" keyword
+	and start "Scan Class"
+	when asked for the class location, select the new source dir
+	start "Scan Import" from the source window popup
+	(if required) select the appropriate text (e.g. forward
+	declarations) in the *.hpp source window and start "Scan Insert"
+	bring *.cpp source window to top, start "Scan Functions"
+	repeat these steps for all 3 classes
+
+	copy the IBM support files (*.rc, *.ipf, *.dlg, *.ico) to your new
+	source directory
+
+/////I Conversion Hints @ 1 @  @ 
+There are a few things to consider when converting the sources:
+
+1.) "AHelloWindow" class name should be renamed
+
+There already is a "AHelloWindow" class in the CLSTEST dir.
+In order to keep this class, prior to the "Scan Class" of the
+AHELLOW5.HPP, the class name "AHelloWindow" should be replaced
+by "AHelloWindow5" in both the AHELLOW5.HPP and AHELLOW5.CPP
+(can be done via the "Find/Replace.." popup menu item in the
+source window)
+
+
+2.)  make "AHelpHandler" class an auxiliary class
+
+This class (defined in AHELLOW5.HPP) is too small (just a single,
+2-line function) to make it a toplevel class. Rather than converting
+it in a toplevel class of itself, it is kept as a auxiliary class
+(located in an insert) within the AHelloWindow5 class. However,
+there would be other ways to structure this (toplevel class, 
+C++ local class etc.)
+
+3.) copy global "main ()" to AHelloWindow5
+
+Since global functions cannot be attached automatically to 
+converted classes, the main() function of AHELLOW5.CPP has
+to be copied manually to class AHelloWindow5. Select and copy the
+function definitin to the clipboard, paste it to the TextPane of the
+ClassEditor and select "save". Depending on the prior function
+selection of the ClassEditor, you may get a "function attributes
+changed due to inconsistency" message (can be ignored). This is
+due to the fact that the ClassEditor tries to apply the attributes
+(e.g. "private") of the currently selected func to the saved func
+definition from the TextPane (which will not work because "main()"
+is a global func instead of a member func).
+
+
+4.) be aware of import positions
+
+Most  imports of the original IBM sources are split (i.e. there is
+a forward class decl in the *.hpp and an #include in the *.cpp).
+If you don't want to set all import positions to "pre", make sure
+that you have the forward decls that are required (locate it
+in a "pre" insert).
+
+Currently, the ClassConverter does not recognize import positions
+and will default all imports to "pre"
+
+
+5.) set PM linkage for AHelloWindow5 class
+
+To force a default PM linkage of the application, open the
+ClassDialog (via from "Class->Class Spec") from the AHelloWindow5
+ClassEditor and select the "define:_PM_" category from the
+CategoryPane of the ClassDialog. If you don't specify this category,
+you will have to set the PM linkage manually each time an
+AppsBuilder is opened for this class (otherwise the app will not
+run correctly).
+
+/////I Create a "Post Build Procedure" @ 1 @  @ 
+To enable the use of unmodified support files (*.rc, *.ipf etc),
+the user has to specify a "Post Build Procedure" that specifies
+how the application has to be processed after a successful build.
+
+A Post Build Procedure is simply a REXX procedure that has the
+same filename stem and path as the application class (e.g.
+AHelloWindow5). There is no restriction of what can be done
+from a Post Build Procedure.
+
+To create a new or edit an existing Post Build Proc, open the
+AppsBuilder for the class "AHelloWindow5" and select the
+"File->Edit Post Proc" menu item. A TextViewer will appear that
+can be used to edit the contents of the Proc File.
+
+/////I Usage of "Post Build Procedures" @ 1 @  @ 
+Since all compilation and linking is done with a response file
+for ICC.EXE, there is no automatic support for the processing that
+should take place after the application has been linked.
+
+Usually such things (e.g. compiling and linking *.rc files, compiling
+*.ipf files etc.) are done within a makefile. Because the
+AppsBuilder does the MAKE stuff (and all additional things like
+storing object attributes) by itself, no makefile is used.
+
+There is support for automatically compiling and linking a resource
+file (if an appropriate *.rc file is found) after a successful build.
+However, this often requires an explicit path setting from within
+the *.rc file because it is compiled from the TMP dir and RC does
+not support partly specified paths very well.
+
+Such problems can be circumvented by the usage of a Post Build
+Proc. You can switch directories and call whatever you want
+from such a procedure (even NMAKE if you like to do so).

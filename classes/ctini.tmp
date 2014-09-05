@@ -1,0 +1,106 @@
+-- dir used for class sources (HPFS)
+SRCDIRS = @ADDIRS; \
+    @LIBROOT\cls\work; \
+    @LIBROOT\cls\tutorial         tutorial companion classes; \
+    @LIBROOT\cls\iclui            IBM iclui examples; \
+    @LIBROOT\cls\icclc            IBM collection class examples; \
+    @LIBROOT\cls\runtime\test     runtime support test classes; \
+    @LIBROOT\cls\runtime          runtime support interface classes
+
+-- compiler include paths
+INCLUDE = @LIBROOT\header;@COMPILER\include;@COMPILER\ibmclass;@TOOLKIT\cplus\os2h
+
+-- dir used for squeezed class headers
+* CLSHDR = @LIBROOT\fast
+
+-- dir used for squeezed sys headers (optional, VDISK)
+* SYSHDR = @LIBROOT\fast @DRIVE\tolkt21\cplus\os2h\*.h;@COMPILER\include\*.h;@COMPILER\ibmclass\*.hpp;@COMPILER\ibmclass\*.inl;@LIBROOT\header\*.h;@LIBROOT\header\*.hpp
+
+-- wrap class includes to speed up preprocessor
+* WRAPINCL = 1
+
+-- dir used for static objects and libs
+LIB = @LIBROOT\lib
+
+-- definition of external libraries ( '*' = default libraries)
+EXTLIBS = @LIBROOT\lib\ctstd.lib  *       Standard CThrough library; \
+    @TOOLKIT\os2lib\os2386.lib   *       Standard OS/2 API impLib; \
+    @COMPILER\lib\dde4mbsi.lib      *       IBM MT runtime impLib; \
+    @COMPILER\lib\dde4muii.lib      *       IBM ICLUI implib; \
+    @COMPILER\lib\dde4cci.lib       *       IBM collection cls implib
+
+-- max filename length (without extension)
+MAXFLEN = 8
+
+-- dir used for temporaries, objects and executables
+TMP = @LIBROOT\tmp
+
+-- dir used for archives
+ARCHIVE = @LIBROOT\arc
+
+-- dir used for squeezed class headers (optional, HPFS)
+CLSHDR = @LIBROOT\fast
+
+-- file extension
+CLSEXT = .cpp
+
+CLSARCEXT = .car
+
+GRPARCEXT = .gar
+
+CHGEXT = .chg
+
+-- predefined categories
+FUNCCAT = aux debug test
+
+DATACAT = aux test
+
+CLSCAT = app dll exportDll lib lock monitor test
+
+-- #define categories
+DEFINECAT = _PM_ _VIO_
+
+-- log file(s)
+LOGFILES = @LIBROOT\ct.log
+
+-- change log path
+CHANGELOG = @LIBROOT\ct.chg
+
+-- BSA support ( 0: none, 1: full )
+BSA = 0
+
+-- default build options for AppsBuilder
+BUILDOPT = map
+
+-- default HierarchyViewer display options
+GRAPHOPT = bases vert
+
+-- class docu converter files
+CLSDOC = @CTBIN\cpp2out.c2x out OutlineEditor Standard class-to-outline conversion
+
+OUTDOC = @CTBIN\out2ipf.o2x ipf - Standard outline-to-IPF conversion
+
+-- toolbar initialization
+TOOLBAR = HierarchyViewer HeapTracer XLogViewer ClassEditor AppsBuilder
+
+-- misc
+TABWIDTH = 4
+
+SAVEFREQ = 1
+
+-- class (>0) , data member(>1) start with uppercase
+CASECONV = 2
+
+-- PM application type indicator class
+PMAPPCLS = PmObject
+
+-- online books
+BOOKS = @BOOK\dde4clib.inf     IBM C library; \
+    @BOOK\dde4lrm.inf       IBM C/Set++ language ref; \
+    @BOOK\dde4uil.inf      IBM User Interface Library; \
+    @BOOK\cpgref1.inf+@BOOK\cpgref2.inf+@BOOK\cpgref3.inf        OS/2 Dos.. online doc; \
+    @BOOK\pmwin.inf          OS/2 Win.. online doc; \
+    @BOOK\pmgpi.inf          OS/2 Gpi.. online doc
+
+-- speed up option for startup (dangerous if classes are shared of modified externally)
+* USELIBTAGS = 1

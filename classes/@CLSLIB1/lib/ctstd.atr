@@ -1,0 +1,10 @@
+e:\ct\lib\CTStd.atr :  library description file
+
+/////V CTStd PM e:\ct\clsbased 1  PM 11.05.94 17.17.20
+lib
+
+Heap: optimize inline
+HeapTileBlock: optimize inline
+XH: optimize inline
+HeapBigBlock: optimize inline
+CTStd: optimize inline

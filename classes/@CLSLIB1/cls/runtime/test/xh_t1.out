@@ -1,0 +1,161 @@
+/////V xh_t1  f:\cls_ibm\cls\runtime\test 1  PM 05.09.94 21:54:16
+
+/////I XH_T1 exception handling example @ 0 @  @ 
+This example consists of a single file that is used to demonstrate
+the CTHROUGH exception handling class XH.
+
+Exceptions can be raised either direct (so called "user exceptions", 
+e.g. in "doUserRaise()") or indirect via a OS/2 exception handler.
+
+If the XProcessor process was started (e.g. from the CThrough
+folder), the user will see an appropriate exception message and
+will be asked for further directions ("abort, retry, ignore").
+
+If the XProcessor was not started, the application will be aborted
+on the first exception.
+
+In both cases, an Exception log file (XCPT.XLG), residing in the
+applications directory,  will be updated.
+
+This logfile can be analyzed by the XLogViewer that can be started
+from the Controller.
+
+/////I The XProcessor @ 1 @  @ 
+The XProcessor is an external program that is represented
+by a small StdWindow (which usually is minimized).
+
+It listens to a NamedPipe that is used to report exceptions. If such
+a message is received, a MessageBox pops up, asking the user
+what to do with the ill behaving application (abort, retry, ignore).
+This message box actually belongs to the XProcessor. If it does
+not get active because of PM problems in the ill behaving app,
+the XProcessor is able to detect and kill such PM user lockouts.
+
+The XProcessor has to be started just once. It can serve multiple
+simultaneously running applications.
+
+The XProcessor is a small, simple app that can be tailored to
+specific needs (e.g. to report errors to a sysop on networked
+machines).
+
+/////I The XLog @ 1 @  @ 
+There is an Exception log file XLOG.XLG written either by the
+XProcessor or by the ill behaving app itself. This file is located
+in the same directory as the application itself.
+
+The XLog has one entry for every exception that occurs. All
+Entries contain info about 
+
+	date
+	time
+	module name and process id of ill behaving process
+	(optional) exception message
+	call stack for exception
+
+/////I The XLogViewer @ 1 @  @ 
+The XLogViewer is a tool that can be used within CTHROUGH. It
+displays the contents of a XLog file and enables the user to
+further analyze exceptions that are stored in the XLog.
+
+If the XLogViewer is able to locate a (converted) linker map file
+for the application (*.mp, automatically created if the "map"
+option was set in the AppsBuilder), it will load this mapfile in
+order to display the call stack in its lower pane (the StackPane).
+
+From this pane, the user can open a ClassEditor that will be
+positioned automatically on the appropriate function.
+
+If the mapfile is younger than the app or the exception entry,
+the XLogViewer will mark the entry as "outdated" (grayed).
+The call stack of outdated entries can not be analyzed (no
+corresponding mapfile).
+
+/////I SavePoints @ 1 @  @ 
+The XH class uses a "SavePoint" as an abstraction of the 
+setjmp/longjmp mechanism.
+
+SavePoints can be set at places that form suitable restart points
+of a program (e.g. in front of dispatcher loops).
+
+When an exception occurs and the user selects the "retry" option
+from the Exception MessageBox (launched by the XProcessor), the
+program will do a longjmp to the last SavePoint.
+
+>> This is done in combination with a stack unwind <<
+
+There are several examples of SavePoints in XH_T1
+(e.g. in function "secondThread()")
+
+/////I explicit raise @ 1 @  @ 
+Explicit "user" raises can be done with the 
+
+		XRAISE( defaultAction )
+
+macro. Prior to the execution of this macro, there can be text
+written to the Exception stream (that will appear as message
+text in the XLog or the Exception MessageBox).
+
+/////I multile threads @ 1 @  @ 
+XH can be used in a multi thread application. In order to enable
+the handling of OS/2 exceptions (access violations etc), every
+thread function has to use the REGISTER_XCPT and
+UNREGISTER_XCPT macros (see function "secondThread()").
+
+/////I ignore an exception @ 1 @  @ 
+Even if there is a "ignore" respond in MessageBoxes on OS/2
+exceptions (e.g. access violations and division by zero), this may
+not be useful in many cases. Ignoring such an exception most times
+will result just in a follow on exception. However, the program
+should continue with the next instruction if this option was selected.
+
+/////I C++ and CTHROUGH exception handling @ 1 @  @ 
+There are some differences between the C++ and the CTHROUGH
+exception handling.
+
+Function "doCppException()" demonstrates how both methods can
+be combined.
+
+C++ mainly uses three constructs to handle exceptions:
+
+	try { .. }
+	catch ( <exceptionClass> ) { .. }
+	throw <exceptionClass object>
+
+System exceptions like access violations or division by zeros
+cannot be handled directly via catch blocks. For every exception
+there must be an explicit raise.
+
+C++ always does a "jump forward" from the raise to the matching
+catch block, "retry" functionality must be programmed explicitely
+(by means of a local loop or a setjmp/longjmp).
+
+Generally spoken, the C++ way to do things is more appropriate to
+handle "high level" exceptions that are detected before they can
+cause "low level" exceptions like access violations etc.
+
+
+CTHROUGH exception handling uses 2 constructs (macros):
+
+	SAVEPOINT
+	RAISE
+
+It can be used for implicitely "raised" OS/2 exceptions (division by zero
+etc.) and for explicitely raised (by means of the RAISE macro) - so
+called - user exceptions.
+
+All exceptions are handled in the same way, there is no thing like an
+exception object that can store additional info. If the XProcessor is
+started, the user has the choice to:
+
+	abort the process
+	retry the operation (jump back to last SAVEPOINT)
+	ignore the exception (continue with the next instruction)
+
+If the user respond is a "retry" there will be a "fall back" to the
+last previous SAVEPOINT. This also incorporates a stack unwind.
+
+In addition, there can be text output that will be attached to the
+exception in the XProcessor MessageBox as well as the XLog file.
+Since this output is written to a pipe (and processed in the XProcessor),
+there is no restriction about the size of the text (could be used to
+"dump" objects).
